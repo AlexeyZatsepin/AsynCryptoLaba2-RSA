@@ -1,9 +1,5 @@
 #include <iostream>
-#include <boost/multiprecision/cpp_int.hpp>
-
-#define uint_t uint256_t
-
-using namespace boost::multiprecision;
+#include "generator.h"
 
 namespace Utils{
     uint_t pow_mod(uint_t a,uint_t t,uint_t n){
@@ -33,10 +29,12 @@ namespace Utils{
             s++;
         }
         t = n;
+
         for (auto k = 0; k < 30; k++){
             auto r = std::rand()%(n-2-2+1) + 2;
             auto x = pow_mod(r,t,p);
             if ((x==1)|(x==n)) break;
+            if (s<1) break;
             for(uint_t i = 0;i < s-1;i++){
                 x = x*x%n;
                 if (x==1) return false;
@@ -62,7 +60,34 @@ namespace Utils{
     }
 
     uint_t get_prime_number(int length){
-        return 1<<length; // TODO
+        bool flag = true;
+        uint_t p;
+        while (flag){
+            p = Generator::generate(length);
+//            std::cout << p << std::endl;
+            if (Miller_Rabin(p)){
+                flag = false;
+            }
+        }
+        return p;
     }
+
+    uint_t euler(uint_t n) {
+        uint_t result = n;
+        for (uint_t i=2; i*i<=n; ++i)
+            if (n % i == 0) {
+                while (n % i == 0)
+                    n /= i;
+                result -= result / i;
+            }
+        if (n > 1)
+            result -= result / n;
+        return result;
+    }
+
+    uint_t get_reverse_number_in_field(uint_t a,uint_t n){
+        return boost::multiprecision::powm(a,euler(n)-1,n);
+    }
+
 
 }
