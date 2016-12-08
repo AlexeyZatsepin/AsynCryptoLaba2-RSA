@@ -4,14 +4,14 @@
 namespace RSA{
 
     struct open_keys{
-        uint_t e;
-        uint_t n;
+        uint256_t e;
+        uint256_t n;
     };
 
     struct secret_keys{
-        uint_t p;
-        uint_t q;
-        uint_t d;
+        uint256_t p;
+        uint256_t q;
+        uint256_t d;
     };
 
     class Client{
@@ -29,27 +29,41 @@ namespace RSA{
             void set_secret_keys(secret_keys k){
                 sk = k;
             }
+            void info(){
+                std::cout<<"Name "<< name << std::endl;
+                std::cout<<"Open key: " << std::endl;
+                std::cout<<"e "<< ok.e << std::endl;
+                std::cout<<"n "<< ok.n << std::endl;
+                std::cout<<"Secret key: " << std::endl;
+                std::cout<<"p "<< sk.p << std::endl;
+                std::cout<<"q "<< sk.q << std::endl;
+                std::cout<<"d "<< sk.d << std::endl;
+            }
 
     };
 
-    uint_t get_prime_number(){
+    uint256_t get_prime_number(){
         auto p1 = Utils::get_prime_number(256);
         int i = 0;
         while (1){
             auto p = p1*2*i +1;
-            if (Utils::Miller_Rabin(p)){
+            if (miller_rabin_test(p,30)){
                 return p;
             }
+            i++;
         }
     }
 
     void generate_key(Client &client){
-        uint_t p = get_prime_number();
-        uint_t q = get_prime_number();
-        uint_t fi = (p-1)*(q-1);
-        uint_t e = (1<<16) + 1;
+        std::cout << "+++ key generator +++" << std::endl;
+        uint256_t p = get_prime_number();
+        std::cout << "p generated" << std::endl;
+        uint256_t q = get_prime_number();
+        std::cout << "q generated" << std::endl;
+        uint256_t fi = (p-1)*(q-1);
+        uint256_t e = (1<<16) + 1;
         if (boost::math::gcd(e, fi)==1){
-            uint_t d = Utils::get_reverse_number_in_field(e,fi);
+            uint256_t d = Utils::get_reverse_number_in_field(e,fi);
             open_keys ok;
             ok.e = e;
             ok.n = p*q;
@@ -60,5 +74,6 @@ namespace RSA{
             client.set_open_keys(ok);
             client.set_secret_keys(sk);
         }
+        std::cout << "+++ keys generated +++" << std::endl;
     }
 }

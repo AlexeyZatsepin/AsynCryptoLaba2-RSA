@@ -2,24 +2,24 @@
 
 #define PRIME 999983
 
-void print_bool(bool res){
-    if (res){
-        std::cout << "true" << std::endl;
-    }else {
-        std::cout << "false" << std::endl;
-    }
-}
 
 int main() {
-    uint_t big("115792089237316195423570985008687907853269984665640564039457584007911697984170");
-    print_bool(Utils::Miller_Rabin(big));
+    std::srand(clock());
+//    std::cout << Utils::miller_ruben_test(2124679) << std::endl;
+//    std::cout << Utils::miller_ruben_test(953) << std::endl;
+//    std::cout << Utils::miller_ruben_test(65537) << std::endl;
+//    std::cout << Utils::miller_ruben_test(47) << std::endl;
+    std::cout << Utils::get_reverse_number_in_field(3, 26) << std::endl;
+    std::cout << Utils::get_reverse_number_in_field(2, 41) << std::endl;
+    std::cout << Utils::get_reverse_number_in_field(4, 41) << std::endl;
 
-//    std::cout << Utils::get_prime_number(999980,999984) << std::endl;
-    std::cout << Utils::get_prime_number(256) << std::endl;
-    for (int j = 0; j < 10; ++j) {
-        std::cout << Generator::generate(256) << std::endl;
-    }
+    RSA::Client A("A");
+    RSA::generate_key(A);
+    A.info();
 
+    RSA::Client B("B");
+    RSA::generate_key(B);
+    B.info();
 
     return 0;
 }
