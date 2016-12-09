@@ -11,16 +11,17 @@
 
 using uint1024_t = boost::multiprecision::uint1024_t;
 using int1024_t = boost::multiprecision::int1024_t;
+using namespace std;
 
 namespace Generator{
     int next(){
-        return std::rand() % 256;
+        return rand() % 256;
     }
 
     int1024_t generate(int N){
         int1024_t n = 0;
         for (auto i=0;i < N;i+=8){
-            std::srand(clock());
+            srand(clock());
             int1024_t t = next();
             int1024_t temp = t << i;
             n = n | temp;
@@ -92,7 +93,7 @@ namespace Utils {
 //        auto counter = 0;
 //
 //        while (counter++ < k) {
-//            uint1024_t x = std::rand() % (number - 1);
+//            uint1024_t x = rand() % (number - 1);
 //            if (gcd(x,number) == 1) {
 //                if ((powm(x, d, number) == 1)
 //                    || (powm(x, d, number)==number-1)) {
@@ -119,7 +120,7 @@ namespace Utils {
 //    }
 
 //    int1024_t get_prime_number(int1024_t n1,int1024_t n2){
-//        int1024_t x = std::rand()%(n2-n1+1) + n1;
+//        int1024_t x = rand()%(n2-n1+1) + n1;
 //        if (x%2==0){
 //            x = x+1;
 //        }
@@ -132,26 +133,34 @@ namespace Utils {
 //        return get_prime_number(n2,2*n2-2); // bertran
 //    }
 
-    int1024_t get_prime_number(int length) {
-        std::cout << "Generate prime number by bits count:" << std::endl;
+//    int1024_t get_prime_number(int length) {
+////        cout << "Generate prime number by bits count:" << endl;
+//        bool flag = true;
+//        int1024_t p;
+//        while (flag) {
+//            p = Generator::generate(length);
+////            cout << p << endl;
+//            if (boost::multiprecision::miller_rabin_test(p.convert_to<uint1024_t>(), 30)) {
+//                flag = false;
+//            }
+//        }
+////        cout << "Prime number generated" << endl;
+//        return p;
+//    }
+
+    int1024_t get_prime_number(int lenght) {
         bool flag = true;
-        int1024_t p;
+        int1024_t temp;
         while (flag) {
-            p = Generator::generate(length);
-//            std::cout << p << std::endl;
-            if (boost::multiprecision::miller_rabin_test(p.convert_to<uint1024_t>(), 30)) {
+            temp = Generator::generate(lenght);
+//            cout << p << endl;
+            if (boost::multiprecision::miller_rabin_test(temp.convert_to<uint1024_t>(), 30)) {
                 flag = false;
             }
         }
-        std::cout << "Prime number generated" << std::endl;
-        return p;
-    }
-
-    int1024_t get_prime_number() {
-        int1024_t p1 = Utils::get_prime_number(256);
         int i = 0;
         while (1) {
-            auto p = p1 * 2 * i + 1;
+            auto p = temp * 2 * i + 1;
             if (boost::multiprecision::miller_rabin_test(p.convert_to<uint1024_t>(), 30)) {
                 return p;
             }
