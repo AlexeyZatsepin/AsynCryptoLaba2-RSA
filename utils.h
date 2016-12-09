@@ -92,16 +92,15 @@ namespace Utils {
 //        while (counter++ < k) {
 //            int1024_t x = rand() % (number - 1);
 //            if (gcd(x,number) == 1) {
-//                if ((boost::multiprecision::powm(x, d, number) == 1)
-//                    || (boost::multiprecision::powm(x, d, number)==number-1)) {
+//                if ((powm(x, d, number) == 1)
+//                    || (powm(x, d, number)==number-1)) {
 //                    return true;
 //                }
 //                else {
-//                    for (int r = 1; r < s; r++) {
-//                        int1024_t max = 1<<1000;
+//                    for (int1024_t r = 1; r < s; r++) {
 //                        int1024_t two = 2;
-//                        int1024_t t = d * boost::multiprecision::powm(two, r, max);
-//                        int1024_t temp = boost::multiprecision::powm(r, t, max);
+//                        int1024_t t = d * powm(two, r, number);
+//                        int1024_t temp = powm(r, t, number);
 //                        int1024_t xR = temp % number;
 //                        if (xR == number - 1) {
 //                            return true;
@@ -124,14 +123,14 @@ namespace Utils {
         int1024_t temp;
         while (flag) {
             temp = Generator::generate(lenght);
-            if (boost::multiprecision::miller_rabin_test(temp.convert_to<uint1024_t>(), 30)) {
+            if (miller_rabin_test(temp.convert_to<uint1024_t>(), 30)) {
                 flag = false;
             }
         }
         int i = 0;
         while (1) {
             auto p = temp * 2 * i + 1;
-            if (boost::multiprecision::miller_rabin_test(p.convert_to<uint1024_t>(), 30)) {
+            if (miller_rabin_test(p.convert_to<uint1024_t>(), 30)) {
                 return p;
             }
             i++;

@@ -64,39 +64,39 @@ namespace RSA {
 
     };
     int1024_t encrypt(int1024_t message, open_keys ok) {
-        int1024_t c = boost::multiprecision::powm(message, ok.e, ok.n);
+        int1024_t c = powm(message, ok.e, ok.n);
         return message < (ok.n - 1) ? c : 0;
     }
 
     int1024_t decrypt(int1024_t cipher, secret_keys sk) {
-        int1024_t m = boost::multiprecision::powm(cipher, sk.d, sk.p*sk.q);
+        int1024_t m = powm(cipher, sk.d, sk.p*sk.q);
         return m;
     }
 
     int1024_t sign(int1024_t message, secret_keys sk) {
-        int1024_t s = boost::multiprecision::powm(message, sk.d, sk.p*sk.q);
+        int1024_t s = powm(message, sk.d, sk.p*sk.q);
         return s;
     }
 
     bool verify(int1024_t message, int1024_t sign, open_keys ok) {
-        int1024_t m = boost::multiprecision::powm(sign, ok.e, ok.n);
+        int1024_t m = powm(sign, ok.e, ok.n);
         return message == m;
     }
 
     pair<int1024_t,int1024_t> send_key(int1024_t e1,int1024_t n1, secret_keys sk){
         int1024_t k = rand();
         cout << "generated K by first client: "<< hex << k << endl;
-        int1024_t s = boost::multiprecision::powm(k, sk.d, sk.p*sk.q);
-        int1024_t k1 = boost::multiprecision::powm(k, e1, n1);
-        int1024_t s1 = boost::multiprecision::powm(s, e1, n1);
+        int1024_t s = powm(k, sk.d, sk.p*sk.q);
+        int1024_t k1 = powm(k, e1, n1);
+        int1024_t s1 = powm(s, e1, n1);
         return make_pair(k1,s1);
     }
 
     bool recieve_key(int1024_t e,int1024_t n,int1024_t k1,int1024_t s1, secret_keys sk1){
-        int1024_t k = boost::multiprecision::powm(k1, sk1.d, sk1.q*sk1.p);
-        int1024_t s = boost::multiprecision::powm(s1, sk1.d, sk1.q*sk1.p);
-        cout <<"verified K by second client: "<< hex << k << endl;
-        return k == boost::multiprecision::powm(s, e, n);
+        int1024_t k = powm(k1, sk1.d, sk1.q*sk1.p);
+        int1024_t s = powm(s1, sk1.d, sk1.q*sk1.p);
+        cout << "verified K by second client: "<< hex << k << endl;
+        return k == powm(s, e, n);
     }
 
 

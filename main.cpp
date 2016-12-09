@@ -1,6 +1,5 @@
 #include "rsa.h"
 
-
 int main() {
     srand((unsigned)clock());
 
