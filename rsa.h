@@ -62,17 +62,6 @@ namespace RSA {
             generate_key();
         };
 
-        inline void info() {
-            cout << "Name " << name << endl;
-            cout << "Open key: " << endl;
-            cout << "e " << hex << ok.e << endl;
-            cout << "n " << hex << ok.n << endl;
-            cout << "Secret key: " << endl;
-            cout << "p " << hex <<sk.p << endl;
-            cout << "q " << hex <<sk.q << endl;
-            cout << "d " << hex <<sk.d << endl;
-        }
-
     };
     int1024_t encrypt(int1024_t message, open_keys ok) {
         int1024_t c = boost::multiprecision::powm(message, ok.e, ok.n);
