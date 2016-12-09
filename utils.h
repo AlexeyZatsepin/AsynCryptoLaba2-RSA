@@ -1,27 +1,28 @@
 #include <iostream>
-#include <boost/multiprecision/miller_rabin.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
+#include <boost/multiprecision/gmp.hpp>
 #include <boost/math/common_factor.hpp>
+#include <boost/math/special_functions/pow.hpp>
+#include <boost/multiprecision/number.hpp>
+#include <boost/multiprecision/miller_rabin.hpp>
 
 #include <algorithm>
 #include <time.h>
 
-using namespace boost::multiprecision;
+using uint1024_t = boost::multiprecision::uint1024_t;
+using int1024_t = boost::multiprecision::int1024_t;
 
 namespace Generator{
-    boost::mt19937 rng;
-    boost::uniform_int<> one_to_six(0, 255);
-    boost::variate_generator<boost::mt19937, boost::uniform_int<>> dice(rng, one_to_six);
     int next(){
         return std::rand() % 256;
     }
 
-    uint256_t generate(int N){
-        uint256_t n = 0;
+    int1024_t generate(int N){
+        int1024_t n = 0;
         for (auto i=0;i < N;i+=8){
             std::srand(clock());
-            uint256_t t = next();
-            uint256_t temp = t << i;
+            int1024_t t = next();
+            int1024_t temp = t << i;
             n = n | temp;
         }
         return n;
@@ -29,17 +30,24 @@ namespace Generator{
 
 }
 namespace Utils {
-//    int gcd(int number1, int number2) {
-//        if (number2 == 0) {
-//            return number1;
-//        }
-//        else {
-//            return gcd(number2, number1 % number2);
-//        }
+//    uint1024_t pow(uint1024_t x, uint1024_t y) {
+//        if (y == 0)
+//            return 1;
+//        else if ((y % 2) == 0)
+//            return pow(x, y / 2) * pow(x, y / 2);
+//        else
+//            return x * pow(x, y / 2) * pow(x, y / 2);
 //    }
+    int1024_t gcd(int1024_t number1, int1024_t number2) {
+        if (number2 == 0) {
+            return number1;
+        } else {
+            return gcd(number2, number1 % number2);
+        }
+    }
 
-//    int powm(int a, int t, int n) {
-//        int b = 1;
+//    uint1024_t powm(uint1024_t a, uint1024_t t, uint1024_t n) {
+//        uint1024_t b = 1;
 //        while (t) {
 //            if (t % 2 == 0) {
 //                t /= 2;
@@ -53,10 +61,12 @@ namespace Utils {
 //        return b;
 //    }
 
-    uint256_t get_reverse_number_in_field(uint256_t a, uint256_t b) {// number , mod
-        uint256_t x;
-        uint256_t y;
-        uint256_t mod = b;
+    int1024_t get_reverse_number_in_field(int1024_t n, int1024_t m) {// number , mod
+        int1024_t x;
+        int1024_t y;
+        int1024_t mod = m;
+        int1024_t b = mod;
+        int1024_t a = n;
         if (b == 0) {
             x = 1;
             y = 0;
@@ -65,12 +75,12 @@ namespace Utils {
             }
         }
         else {
-            uint256_t q;
-            uint256_t r;
-            uint256_t x1 = 0;
-            uint256_t x2 = 1;
-            uint256_t y1 = 1;
-            uint256_t y2 = 0;
+            int1024_t q;
+            int1024_t r;
+            int1024_t x1 = 0;
+            int1024_t x2 = 1;
+            int1024_t y1 = 1;
+            int1024_t y2 = 0;
             while (b > 0) {
                 q = a / b;
                 r = a - (q*b);
@@ -83,7 +93,7 @@ namespace Utils {
                 y2 = y1;
                 y1 = y;
                 if (a == 1) {
-                    uint256_t temp = x2%mod;
+                    int1024_t temp = x2%mod;
                     if (temp < 0) {
                         temp += mod;
                     }
@@ -94,20 +104,61 @@ namespace Utils {
         return -1;
     }
 
-//    bool miller_ruben_test(uint256_t number) {
-//        uint256_t k = 20;
-//
-//        uint256_t d = number-1;
-//        uint256_t s = 0;
+    int get_reverse_number_in_field_i(int n, int m) {// number , mod
+        int x;
+        int y;
+        int mod = m;
+        int b = mod;
+        int a = n;
+        if (b == 0) {
+            x = 1;
+            y = 0;
+            if (a == 1) {
+                return x;
+            }
+        }
+        else {
+            int q;
+            int r;
+            int x1 = 0;
+            int x2 = 1;
+            int y1 = 1;
+            int y2 = 0;
+            while (b > 0) {
+                q = a / b;
+                r = a - (q*b);
+                x = x2 - (q*x1);
+                y = y2 - (q*y1);
+                a = b;
+                b = r;
+                x2 = x1;
+                x1 = x;
+                y2 = y1;
+                y1 = y;
+                if (a == 1) {
+                    int temp = x2%mod;
+                    if (temp < 0) {
+                        temp += mod;
+                    }
+                    return temp;
+                }
+            }
+        }
+        return -1;
+    }
+
+//    bool miller_ruben_test(uint1024_t number,unsigned int k) {
+//        uint1024_t d = number-1;
+//        uint1024_t s = 0;
 //        while (d%2 == 0) {
 //            d /= 2;
 //            s++;
 //        }
 //
-//        uint256_t counter = 0;
+//        auto counter = 0;
 //
 //        while (counter++ < k) {
-//            int x = std::rand() % (number - 1);
+//            uint1024_t x = std::rand() % (number - 1);
 //            if (gcd(x,number) == 1) {
 //                if ((powm(x, d, number) == 1)
 //                    || (powm(x, d, number)==number-1)) {
@@ -115,7 +166,8 @@ namespace Utils {
 //                }
 //                else {
 //                    for (int r = 1; r < s; r++) {
-//                        int xR = pow(x,d * pow(2,r)) % number;
+//                        uint1024_t t = d * (long long)pow(2,r);
+//                        uint1024_t xR = pow(r,t) % number;
 //                        if (xR == number - 1) {
 //                            return true;
 //                        }
@@ -132,32 +184,32 @@ namespace Utils {
 //        return true;
 //    }
 
-    bool try_test(uint256_t p){
+    bool try_test(uint1024_t p){
         return ((p%3==0) && (p%5 == 0) && (p%7 == 0));
     }
 
-    uint256_t get_prime_number(uint256_t n1,uint256_t n2){
-        auto x = std::rand()%(n2-n1+1) + n1;
+    int1024_t get_prime_number(int1024_t n1,int1024_t n2){
+        int1024_t x = std::rand()%(n2-n1+1) + n1;
         if (x%2==0){
             x = x+1;
         }
         for (auto i = 0; i < ((n1-x)/2); i++){
-            auto p = x+2*i;
-            if (miller_rabin_test(p,30)){
+            int1024_t p = x+2*i;
+            if (boost::multiprecision::miller_rabin_test(p.convert_to<uint1024_t>(),30)){
                 return p;
             }
         }
         return get_prime_number(n2,2*n2-2); // bertran
     }
 
-    uint256_t get_prime_number(int length) {
+    int1024_t get_prime_number(int length) {
         std::cout << "Generate prime number by bits count:" << std::endl;
         bool flag = true;
-        uint256_t p;
+        int1024_t p;
         while (flag) {
             p = Generator::generate(length);
 //            std::cout << p << std::endl;
-            if (miller_rabin_test(p, 30)) {
+            if (boost::multiprecision::miller_rabin_test(p.convert_to<uint1024_t>(), 30)) {
                 flag = false;
             }
         }
