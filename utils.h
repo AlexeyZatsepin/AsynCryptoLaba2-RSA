@@ -79,44 +79,44 @@ namespace Utils {
         return -1;
     }
 
-//    bool miller_ruben_test(int1024_t number,unsigned int k) {
-//        int1024_t d = number-1;
-//        int1024_t s = 0;
-//        while (d%2 == 0) {
-//            d /= 2;
-//            s++;
-//        }
-//
-//        auto counter = 0;
-//
-//        while (counter++ < k) {
-//            int1024_t x = rand() % (number - 1);
-//            if (gcd(x,number) == 1) {
-//                if ((powm(x, d, number) == 1)
-//                    || (powm(x, d, number)==number-1)) {
-//                    return true;
-//                }
-//                else {
-//                    for (int1024_t r = 1; r < s; r++) {
-//                        int1024_t two = 2;
-//                        int1024_t t = d * powm(two, r, number);
-//                        int1024_t temp = powm(r, t, number);
-//                        int1024_t xR = temp % number;
-//                        if (xR == number - 1) {
-//                            return true;
-//                        }
-//                        else if (xR == 1) {
-//                            return false;
-//                        }
-//                    }
-//                }
-//            }
-//            else {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
+    bool miller_ruben_test(int1024_t number,unsigned int k) {
+        int1024_t d = number-1;
+        int1024_t s = 0;
+        while (d%2 == 0) {
+            d /= 2;
+            s++;
+        }
+        auto counter = 0;
+
+        while (counter++ < k) {
+            int1024_t x = rand() % (number - 1);
+            if (gcd(x,number) == 1) {
+                if ((powm(x, d, number) == 1)
+                    || (powm(x, d, number)==number-1)) {
+                    return true;
+                }
+                else {
+                    for (int1024_t r = 1; r < s; r++) {
+                        int1024_t two = 2;
+                        int1024_t t = powm(two, r, number);
+                        t *= d;
+                        int1024_t temp = powm(r, t, number);
+                        int1024_t xR = temp % number;
+                        if (xR == number - 1) {
+                            return true;
+                        }
+                        else if (xR == 1) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
+    }
 
     int1024_t get_prime_number(int lenght) {
         bool flag = true;
