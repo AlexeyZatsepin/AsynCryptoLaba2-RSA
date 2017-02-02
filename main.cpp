@@ -1,8 +1,8 @@
 #include "rsa.h"
+#include "requests.h"
 
 int main() {
     srand((unsigned)clock());
-
     cout << boolalpha << Utils::miller_ruben_test(7,30)<< endl;
 
     RSA::Client A("A");
@@ -29,10 +29,19 @@ int main() {
     cout << "Authtorizated A&B connection: "<< boolalpha << RSA::recieve_key(A.ok.e,A.ok.n,verify_info.first,verify_info.second,B.sk) <<endl;
 
     cout << "------Work with RSA testing environment------" << endl;
-    cout << "Please fill public keys (n,e)" << endl;
+    cout << "Please fill size of n (range 128-2048)" << endl;
+    int size_n;
+    cin >> size_n;
     int1024_t n,e;
-    cin >> hex >> n;
-    cin >> hex >> e;
+    map<string,string> args = {{"keySize",to_string(size_n)}};
+    ptree request = requests::get("http://asymcryptwebservice.appspot.com/rsa/serverKey",args);
+//    cin >> hex >> n;
+//    cin >> hex >> e;
+    n = request.get<int1024_t>("modulus",0);
+    e = request.get<int1024_t>("publicExponent",0);
+//    e = request["publicExponent"];
+    cout <<"Server modulus: "<< n << endl;
+    cout <<"Server publicExponent: "<< e << endl;
     verify_info = RSA::send_key(e,n,A.sk);
     cout << "N: " << hex <<A.ok.n << endl;
     cout << "e: " << hex <<A.ok.e << endl;

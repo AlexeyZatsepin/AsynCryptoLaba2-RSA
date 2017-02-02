@@ -3,5 +3,5 @@ project(AsymCryptoLaba2_RSA)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")#-lgmpxx
 
-set(SOURCE_FILES main.cpp utils.h rsa.h)
+set(SOURCE_FILES main.cpp utils.h rsa.h requests.h)
 add_executable(AsymCryptoLaba2_RSA ${SOURCE_FILES})
